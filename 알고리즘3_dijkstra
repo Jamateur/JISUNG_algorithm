@@ -1,0 +1,73 @@
+from heapq import heappush, heappop
+
+class shortest: #출발점, 경로 정보 저장
+  def __init__(self, s, distance, p):
+    self.source = s
+    self.distance = distance
+    self.p = p
+  def print_shortest(self, dest):  # 시작 정점부터 경로 출력
+    if self.source == dest:
+      print(dest, end = "  ")
+      return
+    if sp.p[dest] != None:
+      self.print_shortest(self.p[dest])
+    else:
+      print("경로가 없습니다.")
+      return
+    print(dest, end = "  ")
+
+class queue: #최소 우선 순위 큐 구현
+  def __init__(self):
+    self.heap = []
+
+  def push(self, item):
+    heappush(self.heap, item)
+
+  def pop(self):
+    return heappop(self.heap)
+
+class Graph:
+  BIG_NUM = 10000000 # 충분히 큰 가중치
+  def __init__(self, vertex_num):
+    self.adj_matrix = [[None for _ in range(vertex_num)] for _ in range(vertex_num)]
+    self.vertex_num = vertex_num
+
+  def edge(self, u , v, w): # edge 추가
+    self.adj_matrix[u][v] = w
+
+  def dijkstra(self, s): #다익스트라 알고리즘
+    distance = [self.BIG_NUM for _ in range(self.vertex_num)] #Y에 있는 노드만 거쳐 v에 도달하는 거리
+    p = [None for _ in range(self.vertex_num)] #이전 노드
+
+    Y= set() #현재 최단 경로인 집합
+    pq = queue()
+    for i in range(self.vertex_num):
+      pq.push((self.BIG_NUM, i))# 거리 값을 삽입 
+
+    distance[s] = 0
+    pq.push((0, s))
+
+    while len(Y) < self.vertex_num:
+      d,v = pq.pop()
+      if distance[v] != d:
+        continue
+      
+      Y.add(v)
+
+      adj_v = self.adjacent_set(v)
+      for u, w_u_v in adj_v:
+        if u not in Y and distance[u] > distance[v] + w_u_v:
+          distance[u] = distance[v] + w_u_v
+          p[u] = v
+          pq.push((distance[u], u))
+
+    sp = shortest(s, distance, p)
+    return sp
+    
+  def adjacent_set(self, v):
+    adj_v = []
+    for i in range(self.vertex_num):
+      w = self.adj_matrix[v][i]
+      if w:
+        adj_v.append((i, w))
+    return adj_v
